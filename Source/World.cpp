@@ -46,6 +46,15 @@ World::World ()
     addAndMakeVisible (textButton = new TextButton ("Run"));
     textButton->addListener (this);
 
+    addAndMakeVisible (title = new TextEditor ("title"));
+    title->setMultiLine (true);
+    title->setReturnKeyStartsNewLine (true);
+    title->setReadOnly (true);
+    title->setScrollbarsShown (true);
+    title->setCaretVisible (false);
+    title->setPopupMenuEnabled (true);
+    title->setText (TRANS("Extended Object Tracking Demo"));
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -66,6 +75,7 @@ World::~World()
     map = nullptr;
     label17 = nullptr;
     textButton = nullptr;
+    title = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -96,6 +106,7 @@ void World::resized()
     map->setBounds (64, getHeight() - 64 - proportionOfHeight (0.8462f), proportionOfWidth (0.8469f), proportionOfHeight (0.8462f));
     label17->setBounds (1232, 8, 88, 24);
     textButton->setBounds (74, 31, 150, 24);
+    title->setBounds (339, 32, 208, 24);
     //[UserResized] Add your own custom resize handling here..
     //[/UserResized]
 }
@@ -174,6 +185,10 @@ BEGIN_JUCER_METADATA
   <TEXTBUTTON name="Run" id="38bc2ca22e9982c" memberName="textButton" virtualName=""
               explicitFocusOrder="0" pos="74 31 150 24" buttonText="Run" connectedEdges="0"
               needsCallback="1" radioGroupId="0"/>
+  <TEXTEDITOR name="title" id="44247fd3237e81bb" memberName="title" virtualName=""
+              explicitFocusOrder="0" pos="339 32 208 24" initialText="Extended Object Tracking Demo"
+              multiline="1" retKeyStartsLine="1" readonly="1" scrollbars="1"
+              caret="0" popupmenu="1"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

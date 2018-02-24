@@ -70,6 +70,7 @@ private:
     ScopedPointer<Map> map;
     ScopedPointer<Label> label17;
     ScopedPointer<TextButton> textButton;
+    ScopedPointer<TextEditor> title;
 
 
     //==============================================================================
