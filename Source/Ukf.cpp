@@ -262,6 +262,7 @@ void UKF::Prediction(double delta_t) {
       res = Xsig_pred_.col(i) - x_;  
       Px_ += weightsx_(i) * res * res.transpose();
   }
+  Px_ = (Px_ + Px_.transpose()) / 2;
   
   //predict covariance matrix - shape
   Pp_.fill(0.);
@@ -270,6 +271,7 @@ void UKF::Prediction(double delta_t) {
       resp = Psig_pred_.col(i) - p_;
       Pp_ += weightsp_(i) * resp * resp.transpose();
   }
+  Pp_ = (Pp_ + Pp_.transpose()) / 2;
   
 }
 
