@@ -29,30 +29,30 @@ void SensorUdp::generateData() {
 	tm_.timestamp = Time::highResolutionTicksToSeconds(ptime_->getHighResolutionTicks() - starttime_);
     //DBG(tm_.timestamp);
     //double orient;
-    if (tm_.timestamp <= 26.) {
+    if (tm_.timestamp <= 260.) {
         orient_ = -M_PI/4.;
     }
-    else if (tm_.timestamp <= 36. && tm_.timestamp > 26.) {
-        orient_ = -M_PI/4 + M_PI/40.*(tm_.timestamp-26.);
+    else if (tm_.timestamp <= 360. && tm_.timestamp > 260.) {
+        orient_ = -M_PI/4 + M_PI/40.*(tm_.timestamp-260.);
     }
-    else if (tm_.timestamp <= 57.) {
+    else if (tm_.timestamp <= 570.) {
         orient_ = 0.;
     }
-    else if (tm_.timestamp > 57. && tm_.timestamp <= 67.) {
-        orient_ = M_PI/20.*(tm_.timestamp - 57.);
+    else if (tm_.timestamp > 570. && tm_.timestamp <= 670.) {
+        orient_ = M_PI/20.*(tm_.timestamp - 570.);
     }
-    else if (tm_.timestamp <= 83.) {
+    else if (tm_.timestamp <= 830.) {
         orient_ = M_PI/2.;
     }
-    else if (tm_.timestamp > 83. && tm_.timestamp <= 93.) {
-        orient_ = M_PI/2. + M_PI/20.*(tm_.timestamp - 83.);
+    else if (tm_.timestamp > 830. && tm_.timestamp <= 930.) {
+        orient_ = M_PI/2. + M_PI/20.*(tm_.timestamp - 830.);
     }
     else {
         orient_ = M_PI;
     }
     // from Extended Object Code directly (factor of 10 added to decrease runtime)
-    double vx = 5000./36. * cos(orient_);
-    double vy = 5000./36. * sin(orient_);
+    double vx = 500./36. * cos(orient_);
+    double vy = 500./36. * sin(orient_);
     
     centerX_ += vx * double(MSECS_UDP) / 1000.;
     centerY_ += vy * double(MSECS_UDP) / 1000.;

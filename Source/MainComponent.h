@@ -46,7 +46,7 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void changeListenerCallback(ChangeBroadcaster *);
+	void changeListenerCallback(ChangeBroadcaster *) override;
 	void handleMessage (const Message& message);
     //[/UserMethods]
 
