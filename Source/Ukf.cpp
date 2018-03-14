@@ -26,14 +26,14 @@ UKF::UKF() {
 
   // initial state vectors
   x_ = VectorXd(4);
-  x_ << -3900 ,
+  /*x_ << -3900 ,
          100  , 
          5    ,
-        -8    ;
+        -8    ;*/
   p_ = VectorXd(3);
-  p_ << -M_PI/3. ,
+  /*p_ << -M_PI/3. ,
          200     ,
-          90     ;
+          90     ;*/
 
   // initial covariance matrice
   Px_ = MatrixXd(4, 4);
@@ -103,11 +103,31 @@ void UKF::ProcessMeasurement(SensorUdpTelemetry meas) {
     TODO:
       * Initialize the state ekf_.x_ with the first measurement.
       * Create the covariance matrix.
-      * Remember: you'll need to convert radar from polar to cartesian coordinates.
     */
     
-    // use measurement here to initialize the filter, eventually
-    // first, use the values provided in the Matlab code JWD
+    // set to mean of detections
+    double mx = 0;
+    double my = 0;
+    int n = 0;
+    for (int i = 0; i < MAX_DETS; i++) {
+        if (meas.posX[i] < std::numeric_limits<double>::infinity()){
+            mx += meas.posX[i];
+            my += meas.posY[i];
+            n  += 1;
+        }
+    }
+    
+    mx /= float(n);
+    my /= float(n);
+    
+    x_ <<  mx ,
+           my ,
+           0  ,
+           0  ;
+    
+    p_ <<     0     ,
+           OBJECT_W ,
+           OBJECT_W ;
     
     // done initializing, no need to predict or update
     time_ = meas.timestamp;
