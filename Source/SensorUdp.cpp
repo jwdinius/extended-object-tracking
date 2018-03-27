@@ -29,23 +29,24 @@ void SensorUdp::generateData() {
 	tm_.timestamp = Time::highResolutionTicksToSeconds(ptime_->getHighResolutionTicks() - starttime_);
     //DBG(tm_.timestamp);
     //double orient;
-    if (tm_.timestamp <= 26.) {
+    double mult = 1.;
+    if (tm_.timestamp <= 26*mult) {
         orient_ = -M_PI/4.;
     }
-    else if (tm_.timestamp <= 36. && tm_.timestamp > 26.) {
-        orient_ = -M_PI/4 + M_PI/40.*(tm_.timestamp-26.);
+    else if (tm_.timestamp <= 36*mult) {
+        orient_ = -M_PI/4 + M_PI/40.*(tm_.timestamp-26*mult);
     }
-    else if (tm_.timestamp <= 57.) {
+    else if (tm_.timestamp <= 57*mult) {
         orient_ = 0.;
     }
-    else if (tm_.timestamp > 57. && tm_.timestamp <= 67.) {
-        orient_ = M_PI/20.*(tm_.timestamp - 57.);
+    else if (tm_.timestamp <= 67*mult) {
+        orient_ = M_PI/20.*(tm_.timestamp - 57*mult);
     }
-    else if (tm_.timestamp <= 83.) {
+    else if (tm_.timestamp <= 83*mult) {
         orient_ = M_PI/2.;
     }
-    else if (tm_.timestamp > 83. && tm_.timestamp <= 93.) {
-        orient_ = M_PI/2. + M_PI/20.*(tm_.timestamp - 83.);
+    else if (tm_.timestamp <= 93*mult) {
+        orient_ = M_PI/2. + M_PI/20.*(tm_.timestamp - 83*mult);
     }
     else {
         orient_ = M_PI;

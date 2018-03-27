@@ -1,8 +1,7 @@
 #include "TimerThread.h"
 
 void TimerThread::run() {
-    int64 currentTime, pastTime, deltaTime;
-	while (!threadShouldExit()) {
+    while (!threadShouldExit()) {
 #ifdef WIN32
 		sleep(frameTime_);
 #else
