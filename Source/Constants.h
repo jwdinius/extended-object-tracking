@@ -11,11 +11,11 @@
 #define OBJECT_W            170.0f
 #define OBJECT_H             40.0f
 
-#define STD_A                1.6f
-#define STD_L                2.0f
-#define STD_ALPHA            0.014f
+#define STD_A                100.0f
+#define STD_L                20.0f
+#define STD_ALPHA            0.5f
 
-#define STD_H                0.5f
+#define STD_H                10.0f
 #define STD_POSX             100.0f
-#define STD_POSY              20.0f
+#define STD_POSY             100.0f
 #endif  // CONSTANTS_H

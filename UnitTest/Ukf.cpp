@@ -9,7 +9,7 @@
 */
 
 #include "Ukf.h"
-#include "Eigen/Dense"
+//#include "Eigen/Dense"
 #include <iostream>
 
 using namespace std;
@@ -165,8 +165,8 @@ void UKF::ProcessMeasurement(SensorUdpTelemetry meas) {
   // update
   Update(meas);
   
-    DBG(delta_t << ", " << x_(0) << ", " << x_(1) << ", " << x_(2) << ", " << x_(3));
-    DBG(p_(0) << ", " << p_(1) << ", " << p_(2));
+    /*DBG(delta_t << ", " << x_(0) << ", " << x_(1) << ", " << x_(2) << ", " << x_(3));
+    DBG(p_(0) << ", " << p_(1) << ", " << p_(2));*/
   
   time_ = meas.timestamp;
 

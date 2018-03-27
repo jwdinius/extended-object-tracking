@@ -23,6 +23,7 @@
 #include "JuceHeader.h"
 #include "Map.h"
 #include "SensorUdp.h"
+#include "Ukf.h"
 //[/Headers]
 
 
@@ -62,6 +63,7 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 
     SensorUdp   *pSensor_;
+    UKF         *pUkf_;
     SensorUdpTelemetry tm_;
 
     //[/UserVariables]

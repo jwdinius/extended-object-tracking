@@ -83,6 +83,10 @@ World::~World()
         pSensor_->removeChangeListener(this);
         delete pSensor_;
 	}
+	if (pUkf_ != nullptr) {
+	    delete pUkf_;
+	}
+
     //[/Destructor]
 }
 
@@ -122,7 +126,7 @@ void World::buttonClicked (Button* buttonThatWasClicked)
         pSensor_ = new SensorUdp();
         pSensor_->reset();
         pSensor_->addChangeListener(this);
-
+        pUkf_ = new UKF();
         //[/UserButtonCode_textButton]
     }
 
@@ -149,6 +153,9 @@ void World::changeListenerCallback(ChangeBroadcaster *)
     {
         // pass tm
         map->setTelemetry( pSensor_->getTelemetry() );
+        pUkf_->ProcessMeasurement( pSensor_->getTelemetry() );
+        map->setUkfInitialized( pUkf_->isInitialized() );
+        map->setUkfState( pUkf_->getState() );
         map->setPose( pSensor_->getPose() );
         map->repaint();
         pSensor_->getNewData();

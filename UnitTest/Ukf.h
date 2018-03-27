@@ -13,16 +13,21 @@
 
 #pragma once
 
-
-#include "SensorUdp.h"
-
-#include "Eigen/Dense"
+#include "../Source/Constants.h"
+#include "../Source/Eigen/Dense"
 #include <vector>
 #include <string>
 #include <fstream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+
+struct SensorUdpTelemetry {
+    double timestamp;
+    double posX[MAX_DETS];
+    double posY[MAX_DETS];
+};
+
 
 class UKF {
 public:
