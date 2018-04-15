@@ -41,16 +41,16 @@ void Map::paint (Graphics& g)
         g.strokePath(truth, PathStrokeType(2.0f) );
     }
     g.setColour (Colours::limegreen);
-    if (is_ukf_initialized_){
-        Path ukf;
+    if (is_kf_initialized_){
+        Path kf;
         double xu, yu, rxu, ryu, au;
-        xu = x_origin + .5f*(float)ukf_state_[0] * (float)getWidth() / MAP_WIDTH;
-        yu = y_origin - .5f*(float)ukf_state_[1] * (float)getHeight()/ MAP_HEIGHT;
-        rxu = 2.f * ukf_state_[5] * (float)getWidth()/MAP_WIDTH;
-        ryu = 2.f * ukf_state_[6] * (float)getHeight()/MAP_HEIGHT;
-        au = -ukf_state_[4];
-        ukf.addCentredArc(xu, yu, rxu, ryu, au, 0.f, 2.f*M_PI, true);
-        g.strokePath(ukf, PathStrokeType(2.0f) );
+        xu = x_origin + .5f*(float)kf_state_[0] * (float)getWidth() / MAP_WIDTH;
+        yu = y_origin - .5f*(float)kf_state_[1] * (float)getHeight()/ MAP_HEIGHT;
+        rxu = kf_state_[5] * (float)getWidth()/MAP_WIDTH;
+        ryu = kf_state_[6] * (float)getHeight()/MAP_HEIGHT;
+        au = -kf_state_[4];
+        kf.addCentredArc(xu, yu, rxu, ryu, au, 0.f, 2.f*M_PI, true);
+        g.strokePath(kf, PathStrokeType(2.0f) );
     }
 }
 
@@ -73,9 +73,9 @@ void Map::setPose(ObjectPose pose)
     return;
 }
 
-void Map::setUkfState(VectorXd state)
+void Map::setKfState(VectorXd state)
 {
-    ukf_state_ = state;
+    kf_state_ = state;
     return;
 }
 

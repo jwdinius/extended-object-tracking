@@ -21,7 +21,7 @@ public:
         }
         pose_.x = std::numeric_limits<double>::infinity();
         pose_.y = std::numeric_limits<double>::infinity();
-        is_ukf_initialized_ = false;
+        is_kf_initialized_ = false;
     };
     ~Map() {};
     
@@ -29,16 +29,16 @@ public:
     void resized();
     void setTelemetry(SensorUdpTelemetry tm);
     void setPose(ObjectPose pose);
-    void setUkfState(VectorXd state);
-    void setUkfInitialized(bool init_flag) { is_ukf_initialized_ = init_flag ;}
+    void setKfState(VectorXd state);
+    void setKfInitialized(bool init_flag) { is_kf_initialized_ = init_flag ;}
 
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Map)
     
     SensorUdpTelemetry tm_;
     ObjectPose pose_;
-    VectorXd ukf_state_;
-    bool is_ukf_initialized_;
+    VectorXd kf_state_;
+    bool is_kf_initialized_;
 	
 };
 
