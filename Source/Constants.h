@@ -11,11 +11,20 @@
 #define OBJECT_W            170.0f
 #define OBJECT_H             40.0f
 
-#define STD_A                1.6f
-#define STD_L                2.0f
-#define STD_ALPHA            0.014f
+// initial covariance terms
+#define INIT_VAR_LENGTH          200.0f
+#define INIT_VAR_ALPHA            0.02f
+#define INIT_VAR_POS             900.0f
+#define INIT_VAR_VEL              16.0f
 
-#define STD_H                0.5f
-#define STD_POSX             100.0f
-#define STD_POSY              20.0f
+// process covariance terms
+#define VAR_LENGTH          0.5f
+#define VAR_ALPHA           0.04f
+#define VAR_POS             100.0f
+#define VAR_VEL             1.0f
+
+// measurement covariance terms
+#define VAR_H               0.25f
+#define VAR_V1              2000.0f
+#define VAR_V2              80.0f
 #endif  // CONSTANTS_H

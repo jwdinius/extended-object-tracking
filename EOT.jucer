@@ -3,11 +3,13 @@
 <JUCERPROJECT id="Hh6k64" name="EOT" projectType="guiapp" version="1.0.0" bundleIdentifier="com.yourcompany.eot"
               includeBinaryInAppConfig="0" jucerVersion="5.2.0" displaySplashScreen="1"
               reportAppUsage="1" splashScreenColour="Dark" cppLanguageStandard="11"
-              companyCopyright="">
+              companyCopyright="Copyright 2018 Joe Dinius, PhD" userNotes="Extended Object Tracking simulation based on S. Yang and M. Baum Extended Kalman Filter for Extended Object Tracking.&#10;Proceedings of the 2017 IEEE International Conference on Acoustics, Speech,&#10;and Signal Processing (ICASSP), New Orleans, USA, 2017."
+              companyName="Joe Dinius, PhD" companyWebsite="jwdinius.github.io"
+              companyEmail="josephwdinius@gmail.com">
   <MAINGROUP id="zNVcHS" name="EOT">
     <GROUP id="{7EEFE2BD-64C1-8B7E-66C3-2E686AB3579F}" name="Source">
-      <FILE id="RlWCis" name="Ukf.cpp" compile="1" resource="0" file="Source/Ukf.cpp"/>
-      <FILE id="X4DKsS" name="Ukf.h" compile="0" resource="0" file="Source/Ukf.h"/>
+      <FILE id="RlWCis" name="Kf.cpp" compile="1" resource="0" file="Source/Kf.cpp"/>
+      <FILE id="X4DKsS" name="Kf.h" compile="0" resource="0" file="Source/Kf.h"/>
       <FILE id="Xm4foi" name="Utils.cpp" compile="1" resource="0" file="Source/Utils.cpp"/>
       <FILE id="EUIkCy" name="Utils.h" compile="0" resource="0" file="Source/Utils.h"/>
       <GROUP id="{1D2EF8F3-5C60-BD6B-05EF-49D7D70397BD}" name="Eigen">
@@ -538,9 +540,9 @@
     <XCODE_MAC targetFolder="Builds/MacOSX">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" enablePluginBinaryCopyStep="1" isDebug="1" optimisation="1"
-                       linkTimeOptimisation="0" targetName="FrvMon"/>
+                       linkTimeOptimisation="0" targetName="EOT"/>
         <CONFIGURATION name="Release" enablePluginBinaryCopyStep="1" isDebug="0" optimisation="3"
-                       linkTimeOptimisation="1" targetName="FrvMon"/>
+                       linkTimeOptimisation="1" targetName="EOT"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_gui_extra" path="../../juce"/>
@@ -561,4 +563,7 @@
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS/>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
 </JUCERPROJECT>

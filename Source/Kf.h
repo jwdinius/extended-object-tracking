@@ -1,20 +1,19 @@
 /*
   ==============================================================================
 
-    Ukf.h
+    Kf.h
     Created: 24 Feb 2018 8:14:38am
     Author:  Joseph Dinius
 
   ==============================================================================
 */
 
-#ifndef UKF_H
-#define UKF_H
+#ifndef KF_H
+#define KF_H
 
 #pragma once
 
 
-#include "Ukf.h"
 #include "SensorUdp.h"
 
 #include "Eigen/Dense"
@@ -22,68 +21,56 @@
 #include <string>
 #include <fstream>
 
+using Eigen::Matrix4d;
+using Eigen::Vector4d;
+using Eigen::Matrix3d;
+using Eigen::Vector3d;
+using Eigen::Matrix2d;
+using Eigen::Vector2d;
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
 
-class UKF {
+class KF {
 public:
 
   ///* initially set to false, set to true in first call of ProcessMeasurement
   bool is_initialized_;
 
   ///* state vectors: [] in SI units and rad
-  VectorXd x_;
-  VectorXd p_;
+  Vector4d r_;
+  Vector3d p_;
 
   ///* state covariance matrices
-  MatrixXd Px_;
-  MatrixXd Pp_;
+  Matrix4d Cr_;
+  Matrix3d Cp_;
     
   ///* measurement covariance matrices
-  MatrixXd Rx_;
-  MatrixXd Rp_;
+  Matrix2d Ch_;
+  Matrix2d Cv_;
     
   ///* process covariance matrices
-  MatrixXd Qx_;
-  MatrixXd Qp_;
+  Matrix4d Cwr_;
+  Matrix3d Cwp_;
     
-  ///* predicted sigma points matrix
-  MatrixXd Xsig_pred_;
-  MatrixXd Psig_pred_;
-
-  ///* time when the state is true, in sec
-  double time_;
-
-  ///* Weights of sigma points
-  VectorXd weightsx_;
-  VectorXd weightsp_;
-    
-
-  ///* State dimensions
-  int n_x_;
-  int n_p_;
-
-  ///* Augmented state dimensions
-  int n_augx_;
-  int n_augp_;
-
-  ///* Sigma point spreading parameters
-  double lambdax_;
-  double lambdap_;
-
-  ///* normalized innovation squared
-  double nisx_;
-  double nisp_;
+  ///* time delta
+  double dt_;
   
+  ///* state transition matrices
+  Matrix4d Ar_;
+  Matrix3d Ap_;
+  
+  //* measurement jacobian
+  MatrixXd H_;
+
   /**
    * Constructor
    */
-  UKF();
+  KF();
 
   /**
    * Destructor
    */
-  virtual ~UKF();
+  virtual ~KF();
 
   /**
    * ProcessMeasurement
@@ -97,7 +84,7 @@ public:
    * @param delta_t Time between k and k+1 in s
    */
 
-  void Prediction(double delta_t);
+  void Prediction();
 
   void NormalizeAngle(double &angle);
   
@@ -108,6 +95,12 @@ public:
    * @param meas_package The measurement at k+1
    */
   void Update(SensorUdpTelemetry meas);
+    
+  VectorXd getState();
+  
+  bool isInitialized() {return is_initialized_;}
+  
+  void printOutput();
 
 };
-#endif //UKF_H
+#endif //KF_H

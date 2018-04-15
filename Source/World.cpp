@@ -83,6 +83,10 @@ World::~World()
         pSensor_->removeChangeListener(this);
         delete pSensor_;
 	}
+	if (pKf_ != nullptr) {
+	    delete pKf_;
+	}
+
     //[/Destructor]
 }
 
@@ -122,7 +126,7 @@ void World::buttonClicked (Button* buttonThatWasClicked)
         pSensor_ = new SensorUdp();
         pSensor_->reset();
         pSensor_->addChangeListener(this);
-
+        pKf_ = new KF();
         //[/UserButtonCode_textButton]
     }
 
@@ -149,6 +153,9 @@ void World::changeListenerCallback(ChangeBroadcaster *)
     {
         // pass tm
         map->setTelemetry( pSensor_->getTelemetry() );
+        pKf_->ProcessMeasurement( pSensor_->getTelemetry() );
+        map->setKfInitialized( pKf_->isInitialized() );
+        map->setKfState( pKf_->getState() );
         map->setPose( pSensor_->getPose() );
         map->repaint();
         pSensor_->getNewData();

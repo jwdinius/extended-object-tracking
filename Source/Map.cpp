@@ -15,6 +15,7 @@ void Map::paint (Graphics& g)
     float x_origin = .5f * (float)getWidth();
     float y_origin = .5f * (float)getHeight();
     float square = 10.f * (float)getWidth()/MAP_WIDTH;
+    g.setColour (Colours::white);
     
     for (int i = 0; i < MAX_DETS; i++)
     {
@@ -23,7 +24,6 @@ void Map::paint (Graphics& g)
             float ys = y_origin - .5f * (float)getHeight() / MAP_HEIGHT * tm_.posY[i];
             //std::cout << tm_.timestamp << ", " << xs << ", " << ys << std::endl;
     
-            g.setColour (Colours::white);
             g.fillRect(xs-square, ys-square, 2.f * square, 2.f * square);
         }
     }
@@ -39,6 +39,18 @@ void Map::paint (Graphics& g)
         truth.addCentredArc(xt, yt, rx, ry, -pose_.theta, 0.f, 2.f*M_PI, true);
     
         g.strokePath(truth, PathStrokeType(2.0f) );
+    }
+    g.setColour (Colours::limegreen);
+    if (is_kf_initialized_){
+        Path kf;
+        double xu, yu, rxu, ryu, au;
+        xu = x_origin + .5f*(float)kf_state_[0] * (float)getWidth() / MAP_WIDTH;
+        yu = y_origin - .5f*(float)kf_state_[1] * (float)getHeight()/ MAP_HEIGHT;
+        rxu = kf_state_[5] * (float)getWidth()/MAP_WIDTH;
+        ryu = kf_state_[6] * (float)getHeight()/MAP_HEIGHT;
+        au = -kf_state_[4];
+        kf.addCentredArc(xu, yu, rxu, ryu, au, 0.f, 2.f*M_PI, true);
+        g.strokePath(kf, PathStrokeType(2.0f) );
     }
 }
 
@@ -60,6 +72,13 @@ void Map::setPose(ObjectPose pose)
     pose_.theta = pose.theta;
     return;
 }
+
+void Map::setKfState(VectorXd state)
+{
+    kf_state_ = state;
+    return;
+}
+
 void Map::resized()
 {
     // This method is where you should set the bounds of any child
