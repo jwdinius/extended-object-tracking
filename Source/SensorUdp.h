@@ -18,7 +18,6 @@
 #include "Eigen/Dense"
 
 #include <random>
-//#include <unistd.h>
 
 struct SensorUdpTelemetry {
     double timestamp;
@@ -35,6 +34,7 @@ class SensorUdp : public ChangeBroadcaster, // broadcasts to World
 {
 public:
 	SensorUdp() {
+	    // initializations
 	    pTT_ = new TimerThread(MSECS_UDP);
 	    pTT_->addChangeListener(this);
 	    pTT_->startThread();
@@ -67,8 +67,7 @@ public:
 	void reset();
 			
 private:
-    //int time_;
-	SensorUdpTelemetry tm_;
+    SensorUdpTelemetry tm_;
 	ObjectPose pose_;
 	
 	TimerThread *pTT_;

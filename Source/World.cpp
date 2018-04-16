@@ -79,6 +79,7 @@ World::~World()
 
 
     //[Destructor]. You can add your own custom destruction code here..
+    // pointer cleanup
     if (pSensor_ != nullptr) {
         pSensor_->removeChangeListener(this);
         delete pSensor_;
@@ -86,7 +87,6 @@ World::~World()
 	if (pKf_ != nullptr) {
 	    delete pKf_;
 	}
-
     //[/Destructor]
 }
 
@@ -107,7 +107,7 @@ void World::resized()
     //[UserPreResize] Add your own custom resize code here..
     //[/UserPreResize]
 
-    map->setBounds (64, getHeight() - 64 - proportionOfHeight (0.8462f), proportionOfWidth (0.8469f), proportionOfHeight (0.8462f));
+    map->setBounds (64, getHeight() - 64 - proportionOfHeight (0.8468f), proportionOfWidth (0.8463f), proportionOfHeight (0.8468f));
     label17->setBounds (1232, 8, 88, 24);
     textButton->setBounds (74, 31, 150, 24);
     title->setBounds (339, 32, 208, 24);
@@ -123,6 +123,7 @@ void World::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == textButton)
     {
         //[UserButtonCode_textButton] -- add your button handler code here..
+        // create new pointer objects for data handling
         pSensor_ = new SensorUdp();
         pSensor_->reset();
         pSensor_->addChangeListener(this);
@@ -146,21 +147,24 @@ void World::plot(void) {
 
 
 // ***************************************************************************
-void World::changeListenerCallback(ChangeBroadcaster *)
-{
-
-    if (pSensor_ != nullptr)
-    {
-        // pass tm
+void World::changeListenerCallback(ChangeBroadcaster *) {
+    // MAIN EXECUTION LOOP
+    if (pSensor_ != nullptr) {
+        // set sensor telemetry
         map->setTelemetry( pSensor_->getTelemetry() );
+        // Kalman filter step
         pKf_->ProcessMeasurement( pSensor_->getTelemetry() );
+        // tell the map object when the Kalman filter is initialized
         map->setKfInitialized( pKf_->isInitialized() );
+        // get the Kalman filter state and pass to the map object
         map->setKfState( pKf_->getState() );
+        // get the ground truth and pass to the map object
         map->setPose( pSensor_->getPose() );
+        // draw the latest data
         map->repaint();
+        // trigger next sensor processing loop
         pSensor_->getNewData();
     }
-
 }
 
 
@@ -182,7 +186,7 @@ BEGIN_JUCER_METADATA
                  initialHeight="600">
   <BACKGROUND backgroundColour="ff505050"/>
   <GENERICCOMPONENT name="map" id="dc308528de253f76" memberName="map" virtualName=""
-                    explicitFocusOrder="0" pos="64 64Rr 84.694% 84.615%" class="Map"
+                    explicitFocusOrder="0" pos="64 64Rr 84.634% 84.677%" class="Map"
                     params=""/>
   <LABEL name="new label" id="83dd3fe07f3590c0" memberName="label17" virtualName=""
          explicitFocusOrder="0" pos="1232 8 88 24" edTextCol="ff000000"

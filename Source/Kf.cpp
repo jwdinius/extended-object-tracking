@@ -21,32 +21,24 @@ using std::vector;
  * Initializes Kalman filter
  */
 KF::KF() {
-    
-  // 
-
-  // initial state vectors
-  /*x_ << -3900 ,
-         100  , 
-         5    ,
-        -8    ;*/
-  /*p_ << -M_PI/3. ,
-         200     ,
-          90     ;*/
-
   // initial covariance matrices
+  // state
   Matrix2d eye;
   eye.setIdentity();
   Cr_.setZero();
   Cr_.topLeftCorner(2, 2) = INIT_VAR_POS*eye;
   Cr_.bottomRightCorner(2, 2) = INIT_VAR_VEL*eye;
+  // shape/orientation
   Cp_.setZero();
   Cp_(0,0) = INIT_VAR_ALPHA;
   Cp_.bottomRightCorner(2, 2) = INIT_VAR_LENGTH*eye;
   
   // process covariances
+  // state
   Cwr_.setZero();
   Cwr_.topLeftCorner(2, 2) = VAR_POS*eye;
   Cwr_.bottomRightCorner(2, 2) = VAR_VEL*eye;
+  // shape/orientation
   Cwp_.setZero();
   Cwp_(0,0) = VAR_ALPHA;
   Cwp_.bottomRightCorner(2, 2) = VAR_LENGTH*eye;
@@ -59,19 +51,20 @@ KF::KF() {
            0     ,  VAR_H ;
 
   /**
-  TODO:
-  Complete the initialization. See Kf.h for other member properties.
-  Hint: one or more values initialized above might be wildly off...
+  Other initializations
   */
   is_initialized_ = false;
   dt_             = 10;
+  // state transition matrix - cartesian
   Ar_ << 1 , 0, dt_, 0,
          0 , 1, 0, dt_,
          0 , 0, 1,  0 ,
          0 , 0, 0,  1 ;
   
+  // shape/orientation transition matrix
   Ap_.setIdentity();
   
+  // pseudomeasurement transformation (measure cartesian position)
   H_ = MatrixXd(2,4);
   H_ << 1, 0, 0, 0,
         0, 1, 0, 1;
@@ -80,23 +73,17 @@ KF::KF() {
 KF::~KF() {}
 
 /**
- * @param {MeasurementPackage} meas_package The latest measurement data of
- * either radar or laser.
+ * ProcessMeasurement(meas)
+ * handles measurement struct passed from sensor
  */
 void KF::ProcessMeasurement(SensorUdpTelemetry meas) {
-  /**
-  TODO:
-  Complete this function! Make sure you switch between lidar and radar
-  measurements.
-  */
   if (!is_initialized_) {
     /**
-    TODO:
-      * Initialize the state ekf_.x_ with the first measurement.
-      * Create the covariance matrix.
+    * if the filter hasn't been initialized yet,
+    * set the position state to the mean of all valid
+    * detections and zero out the velocity
     */
     
-    // set to mean of detections
     double mx = 0;
     double my = 0;
     int n = 0;
@@ -116,42 +103,55 @@ void KF::ProcessMeasurement(SensorUdpTelemetry meas) {
            0  ,
            0  ;
     
+    // assume that the initial shape is a circle with some a priori knowledge about
+    // the extended object
     p_ <<     0     ,
            OBJECT_W ,
            OBJECT_W ;
     
+    // set filter initialized
     is_initialized_ = true;
     
     return;
   }
 
-  // predict
+  // predict step
   Prediction();
   
-  // update
+  // update step
   Update(meas);
   
 }
 
 /**
+ * Standard KF state and covariance prediction
  */
 void KF::Prediction() {
   /**
+  * This assumes a nearly-constant velocity prediction model
   */
+  // state k|k-1
   r_ = Ar_ * r_;
+  // shape/orientation k|k-1
   p_ = Ap_ * p_;
+  // state covariance k|k-1
   Cr_ = Ar_ * Cr_ * Ar_.transpose() + Cwr_;
+  // shape/orientation covariance k|k-1
   Cp_ = Ap_ * Cp_ * Ap_.transpose() + Cwp_;
 }
 
 void KF::Update(SensorUdpTelemetry meas){
-  
+  /**
+  * For each valid measurement, ...
+  */
   for (int i = 0; i < MAX_DETS; i++){
     if (meas.posX[i] < std::numeric_limits<double>::infinity()){
+      // current measurement
       Vector2d y;
       y << meas.posX[i] ,
            meas.posY[i] ;
       
+      // compute S and M for state and covariance updates
       Matrix2d Ss;
       Matrix2d Rot;
       Rot << cos(p_(0)) , -sin(p_(0)) ,
@@ -181,26 +181,30 @@ void KF::Update(SensorUdpTelemetry meas){
             
       M = M1 * M2;
       
-      // moments of kinematic state
+      // pseudomeasurement
       Vector2d E_y;
-      E_y = H_ * r_; // pseudomeasurement
+      E_y = H_ * r_;
+      // moments of the kinematic state
       MatrixXd C_ry = MatrixXd(4, 2);
       C_ry = Cr_ * H_.transpose();
       Matrix2d C_yy;
       C_yy = H_ * Cr_ * H_.transpose() + Ss * Ch_ * Ss.transpose() + Cv_;
+      // measurement residual
       Vector2d res;
       res = y - E_y;
       r_ = r_ + C_ry * C_yy.inverse() * res;
       Cr_ = Cr_ - C_ry * C_yy.inverse() * C_ry.transpose();
-      Cr_ = (Cr_ + Cr_.transpose()) / 2; // forces symmetry
+      // force symmetry
+      Cr_ = (Cr_ + Cr_.transpose()) / 2;
       
-      // NOW, THE SHAPE AND ORIENTATION
+      // the shape/orientation follows
       MatrixXd T = MatrixXd(3,4);
       T.setZero();
       T(0,0) = 1;
       T(1,1) = 1;
       T(2,3) = 1;
       
+      // kronecker product for quadratic measurement model (see paper)
       Vector4d kron;
       kron << res(0) * res(0) ,
               res(0) * res(1) ,
@@ -219,24 +223,31 @@ void KF::Update(SensorUdpTelemetry meas){
                        3 * E_Y(0)*E_Y(1)       , E_Y(0)*E_Y(2) + 2*E_Y(1)*E_Y(1) ,            3*E_Y(2)*E_Y(1)       ,
                E_Y(0)*E_Y(2) + 2*E_Y(1)*E_Y(1) ,           3 * E_Y(2)*E_Y(1)     ,            3*E_Y(2)*E_Y(2)       ;
                
-      // cross-covariance
+      // moments of the shape/orientation
       Matrix3d C_pY;
       C_pY = Cp_ * M.transpose();
       
-      // shape update
+      // shape updates
       p_  = p_  + C_pY * C_YY.inverse() * (Y-E_Y);
       Cp_ = Cp_ - C_pY * C_YY.inverse() * C_pY.transpose();
-      Cp_ = (Cp_ + Cp_.transpose()) / 2; // forces symmetry
+      // force symmetry
+      Cp_ = (Cp_ + Cp_.transpose()) / 2;
       
     }
   }
 }
 
+/**
+ * handle angle wraparound (currently unused)
+ */
 void KF::NormalizeAngle(double &angle){
   while (angle> M_PI) angle-=2.*M_PI;
   while (angle<-M_PI) angle+=2.*M_PI;
 }
 
+/**
+ * return state and shape estimates for plotting
+ */
 VectorXd KF::getState(){
   VectorXd out = VectorXd( r_.size() + p_.size() );
   out.head(r_.size()) = r_;
@@ -245,6 +256,9 @@ VectorXd KF::getState(){
   return out;
 }
 
+/**
+ * for debugging, print outputs
+ */
 void KF::printOutput(){
   std::cout << r_ << std::endl;
   std::cout << "" << std::endl;

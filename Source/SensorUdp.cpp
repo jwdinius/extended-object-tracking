@@ -14,22 +14,25 @@
 #include <limits>
 
 #include "Utils.h"
-//#include <random>
 
+/*
+ * create udp-like data structs of valid detections
+ * using Poisson-draw for the number of valid detections
+ * and multivariate normal distributions for randomly spread
+ * data points
+*/
 void SensorUdp::generateData() {
-
+    // get number of valid detections using a Poisson random number draw
     int   poisson = distributionP_(generator_);
     while (poisson == 0) poisson = distributionP_(generator_);
     
-    //std::cout << poisson << std::endl;
-	// DO UPDATE HERE
-	// put critical section here
-	// truth
+    // reset data vector from past step
 	reset();
+	// set validity timestamp of measurement
 	tm_.timestamp = Time::highResolutionTicksToSeconds(ptime_->getHighResolutionTicks() - starttime_);
-    //DBG(tm_.timestamp);
-    //double orient;
-    double mult = 1.;
+    
+	// ground truth
+	double mult = 1.;
     if (tm_.timestamp <= 26*mult) {
         orient_ = -M_PI/4.;
     }
@@ -62,7 +65,6 @@ void SensorUdp::generateData() {
     pose_.x     = centerX_;
     pose_.y     = centerY_;
     pose_.theta = orient_;
-    //std::cout << pose_.x << ", " << pose_.y << ", " << pose_.theta << std::endl;
     
     Eigen::Vector2d h;
     
@@ -75,7 +77,7 @@ void SensorUdp::generateData() {
     R << cos(orient_) , -sin(orient_) ,
          sin(orient_) ,  cos(orient_) ;
     
-    // get measurements (# follows Poisson distribution)
+    // get measurements (h represents multiplicative noise, z1 additive)
     for (int p = 0; p < poisson; p++){
         h << -1. + 2. * distributionN_(generator_) ,
              -1. + 2. * distributionN_(generator_) ;
@@ -91,18 +93,12 @@ void SensorUdp::generateData() {
         tm_.posY[p] = centerY_ + z[1];
     }
     
-    /*
-    tm_.posX[poisson] = centerX_;
-    tm_.posY[poisson] = centerY_;
-    */
-	//std::cout << tm_.timestamp << ", " << orient_ << ", " << tm_.posX[0] << ", " << tm_.posY[0] << std::endl;
-    // estimate
-		    
-    // end critical section
-    
 	return;
 }
 
+/*
+ * reset method 
+*/
 void SensorUdp::reset() {
     for (int i = 0; i < MAX_DETS; i++) {
         tm_.posX[i] = std::numeric_limits<double>::infinity();
@@ -113,6 +109,10 @@ void SensorUdp::reset() {
     pose_.theta = 0.;
 }
 
+/*
+ * changeListenerCallback
+ * called when timer thread triggers update
+*/
 void SensorUdp::changeListenerCallback(ChangeBroadcaster *) {
 	generateData();
     
@@ -121,6 +121,9 @@ void SensorUdp::changeListenerCallback(ChangeBroadcaster *) {
 	return;
 }
 
+/*
+ * getTelemetry() method returns sensor data
+*/
 SensorUdpTelemetry SensorUdp::getTelemetry() {
     SensorUdpTelemetry out;
     out.timestamp = tm_.timestamp;
@@ -131,6 +134,9 @@ SensorUdpTelemetry SensorUdp::getTelemetry() {
     return out;
 }
 
+/*
+ * getPose() method returns ground truth
+*/
 ObjectPose SensorUdp::getPose() {
     ObjectPose out;
     out.x     = pose_.x;

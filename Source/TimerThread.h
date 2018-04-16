@@ -1,9 +1,17 @@
+/*
+  ==============================================================================
+
+    TimerThread.h
+    Created: 19 Feb 2018 10:57:39am
+    Author:  Joseph Dinius
+
+  ==============================================================================
+*/
 #ifndef TIMERTHREAD_H
 #define TIMERTHREAD_H
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Constants.h"
-//#include <unistd.h>
 
 class TimerThread : public Thread, 
                     public ChangeBroadcaster {

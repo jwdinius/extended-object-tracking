@@ -107,7 +107,7 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="1000" initialHeight="850">
   <BACKGROUND backgroundColour="ff323232"/>
   <GENERICCOMPONENT name="world" id="407c05eacce16d47" memberName="world" virtualName=""
-                    explicitFocusOrder="0" pos="8 8 98.639% 97.863%" class="World"
+                    explicitFocusOrder="0" pos="8 8 98.659% 97.903%" class="World"
                     params=""/>
 </JUCER_COMPONENT>
 

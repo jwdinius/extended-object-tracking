@@ -59,7 +59,7 @@ public:
   Matrix4d Ar_;
   Matrix3d Ap_;
   
-  //* measurement jacobian
+  //* pseudomeasurement transformation
   MatrixXd H_;
 
   /**
@@ -73,26 +73,19 @@ public:
   virtual ~KF();
 
   /**
-   * ProcessMeasurement
-   * @param meas_package The latest measurement data of either radar or laser
+   * ProcessMeasurement(meas)
    */
   void ProcessMeasurement(SensorUdpTelemetry meas);
 
   /**
-   * Prediction Predicts sigma points, the state, and the state covariance
-   * matrix
-   * @param delta_t Time between k and k+1 in s
+   * Prediction() - propagates state/covariance estimates
    */
-
   void Prediction();
 
   void NormalizeAngle(double &angle);
   
   /**
-   * Updates the state and covariance matrix
-   * @param Zsig matrix with sigma points in measurement space
-   * @param R measurement covariance matrix
-   * @param meas_package The measurement at k+1
+   * Update(meas) - Kalman filter update method
    */
   void Update(SensorUdpTelemetry meas);
     
